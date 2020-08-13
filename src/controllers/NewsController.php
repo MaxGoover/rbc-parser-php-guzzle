@@ -14,7 +14,7 @@ class NewsController
         $response = new Response();
         $response->getBody()->write(
             '<h1>News</h1>
-                   <a href="/article">
+                   <a href="/article/2">
                      <h3>Article</h3>
                    </a>'
         );
