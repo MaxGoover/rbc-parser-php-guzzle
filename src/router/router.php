@@ -13,7 +13,7 @@ $router = new League\Route\Router;
 
 // map a route
 $router->map('GET', '/', NewsController::class);
-$router->map('GET', '/{id:\d+}', ArticleController::class);
+$router->map('GET', '/article/{id:\d+}', ArticleController::class);
 
 $response = $router->dispatch($request);
 
