@@ -10,10 +10,11 @@
     ],
     "minimum-stability": "stable",
     "require": {
+        "ext-json": "*",
+        "guzzlehttp/guzzle": "^7.0",
         "league/route": "^4.5",
         "laminas/laminas-diactoros": "^2.3",
-        "laminas/laminas-httphandlerrunner": "^1.2",
-        "guzzlehttp/guzzle": "^7.0"
+        "laminas/laminas-httphandlerrunner": "^1.2"
     },
     "autoload": {
       "psr-4": {
