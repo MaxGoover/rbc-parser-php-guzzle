@@ -4,15 +4,30 @@ declare(strict_types=1);
 
 namespace app\controllers;
 
+use app\models\News;
+use app\services\RbcClient;
 use Laminas\Diactoros\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class ArticleController
 {
-//    public function __invoke(ServerRequestInterface $request, array $args = []) : ResponseInterface {
-//        $response = new Response();
-//        $response->getBody()->write('<h1>Article</h1><p>Article with ID: ' . $args['id'] . '</p>');
-//        return $response;
-//    }
+    private Response $_response;
+
+    public function __construct()
+    {
+        $this->_response = new Response();
+    }
+
+    public function __invoke(
+        ServerRequestInterface $request,
+        array $args = []
+    ): ResponseInterface
+    {
+        $rbcClient = new RbcClient(
+            $args['domainName'],
+            $args['uri']);
+        $html = $rbcClient->sendRequest();
+        return $this->_response;
+    }
 }
