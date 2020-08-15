@@ -10,7 +10,7 @@ class Article
 
     public function __construct(string $html)
     {
-        $this->_phpQuery = phpQuery::newDocumentFileHTML($html);
+        $this->_phpQuery = phpQuery::newDocument($html);
     }
 
 //    public function getDescription()
@@ -30,8 +30,9 @@ class Article
     public function getText()
     {
         return $this->_phpQuery
-            ->find('.article__text_free p')
-            ->wrap('<div style="width: 690px">');
+            ->find('.article__text p')
+            ->text();
+//            ->wrap('<div style="width: 690px">');
     }
 
     public function getTitle()

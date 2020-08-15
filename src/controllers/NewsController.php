@@ -31,26 +31,25 @@ class NewsController
             . '?_='
             . time());
         $newsObject = json_decode($rbcClient->sendRequest());
-        $list = [];
+        $newsList = [];
 
         foreach($newsObject->items as $key => $news) {
             $news = new News($news->html);
             $url = $news->getUrl();
             $parseUrl = parse_url($url);
-//            $list[$key] = $parseUrl;
+            $list[$key] = $parseUrl;
             $rbcClient = new RbcClient(
                 $parseUrl['scheme'] . '://' . $parseUrl['host'],
                 $parseUrl['path'] . '?' . $parseUrl['query']
             );
             $html = $rbcClient->sendRequest();
             $article = new Article($html);
-            $title = $article->getTitle();
-            $list[$key] = $title;
-//            $list[$key . 'a'] = $parseUrl['path'] . '?' . $parseUrl['query'];
-//            $img = $article->getImageSource();
-//            $text = $article->getText();
+            $newsList[$key]['url'] = $url;
+            $newsList[$key]['title'] = $article->getTitle();
+            $newsList[$key]['imageSrc'] = $article->getImageSource();
+            $newsList[$key]['text'] = $article->getText();
         }
-        $this->_response->getBody()->write(json_encode($list));
+        $this->_response->getBody()->write(json_encode($newsList));
         return $this->_response;
     }
 }
