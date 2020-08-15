@@ -13,7 +13,7 @@ class RbcClient
     {
         $this->_uri = $uri;
         $this->_guzzleClient = new Client([
-            'base_uri' => 'https://' . $domainName
+            'base_uri' => $domainName
         ]);
     }
 
