@@ -22,23 +22,26 @@ class Article
 
     public function getImageSource()
     {
-        return $this->_phpQuery
+        $src = $this->_phpQuery
             ->find('.article__text img')
             ->attr('src');
+        return $src ?: 'Картинка не найдена';
     }
 
     public function getText()
     {
-        return $this->_phpQuery
+        $text = $this->_phpQuery
             ->find('.article__text p')
             ->text();
+        return $text ?: 'Текст статьи не найден';
 //            ->wrap('<div style="width: 690px">');
     }
 
     public function getTitle()
     {
-        return $this->_phpQuery
+        $title = $this->_phpQuery
             ->find('title')
             ->text();
+        return $title ?: 'Заголовок статьи не найден';
     }
 }

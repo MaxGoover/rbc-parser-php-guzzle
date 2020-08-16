@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace app\controllers;
 
 use app\db\RbcDb;
@@ -23,6 +21,7 @@ class NewsController
 
     public function __invoke(ServerRequestInterface $request): ResponseInterface
     {
+        // Получить 10 новостей
         $rbcClient = new RbcClient(
             'https://rbc.ru',
             'v10/ajax/get-news-feed/project/rbcnews/lastDate/'
@@ -32,14 +31,19 @@ class NewsController
             . '?_='
             . time());
         $newsObject = json_decode($rbcClient->sendRequest());
-//        $newsList = [];
+
+        // Создать таблицу для хранения новостей
         $db = new RbcDb();
-        $db->query("CREATE TABLE articles(
-            'id' INTEGER,
-            'title' STRING,
-            'image_source' STRING,
-            'text' TEXT
-        )");
+//        $db->query("CREATE TABLE articles(
+//            'id' INTEGER PRIMARY KEY,
+//            'url' STRING,
+//            'title' STRING,
+//            'image_source' STRING,
+//            'text' TEXT
+//        )");
+
+        // Очищаем таблицу
+        $db->query("DELETE FROM articles");
 
         foreach($newsObject->items as $key => $news) {
             $news = new News($news->html);
@@ -52,16 +56,55 @@ class NewsController
             );
             $html = $rbcClient->sendRequest();
             $article = new Article($html);
-//            $newsList[$key]['url'] = $url;
-//            $newsList[$key]['title'] = $article->getTitle();
-//            $newsList[$key]['imageSrc'] = $article->getImageSource();
-//            $newsList[$key]['text'] = $article->getText();
+            $title = $article->getTitle();
+            $imageSource = $article->getImageSource();
+            $text = $article->getText();
 
-            $db->query("INSERT INTO articles VALUES('$key', 'title', 'imageSrc','text')");
+            $db->query("
+                INSERT INTO articles('url', 'title', 'image_source', 'text')
+                VALUES(
+                '$url',
+                '$title',
+                '$imageSource',
+                '$text')");
         }
 
-        $result = $db->query('SELECT * FROM articles');
-        $this->_response->getBody()->write(json_encode($result->fetchArray()));
+        $result = $db->query('SELECT id, title, text FROM articles');
+        $newsList = [];
+        $result->reset();
+        while ($article = $result->fetchArray()) {
+//            $articles['description'] = $this->_cutText($article['text']);
+            $newsList[] = $article;
+        }
+
+        $db->close();
+        $this->_response
+            ->getBody()
+            ->write($this->_showNews($newsList));
         return $this->_response;
+    }
+
+    private function _cutText(string $text): string
+    {
+        $text = substr($text, 0, 200);
+        $text = rtrim($text, "!,.-");
+        $text = substr($text, 0, strrpos($text, ' '))."...";
+        return nl2br($text);
+    }
+
+    private function _showNews(array $newsList): string
+    {
+        $html = '';
+        foreach($newsList as $news) {
+            $html .= <<<HTML
+                <h1></h1>
+
+            HTML;
+        }
+
+        return <<<HTML
+            
+
+        HTML;
     }
 }
