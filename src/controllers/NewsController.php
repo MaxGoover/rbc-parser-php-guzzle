@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace app\controllers;
 
+use app\db\RbcDb;
 use app\entities\Article;
 use app\entities\News;
 use app\services\RbcClient;
@@ -31,7 +32,14 @@ class NewsController
             . '?_='
             . time());
         $newsObject = json_decode($rbcClient->sendRequest());
-        $newsList = [];
+//        $newsList = [];
+        $db = new RbcDb();
+//        $db->query("CREATE TABLE articles(
+//            'id' INTEGER,
+//            'title' STRING,
+//            'image_source' STRING,
+//            'text' TEXT
+//        )");
 
         foreach($newsObject->items as $key => $news) {
             $news = new News($news->html);
@@ -44,12 +52,16 @@ class NewsController
             );
             $html = $rbcClient->sendRequest();
             $article = new Article($html);
-            $newsList[$key]['url'] = $url;
-            $newsList[$key]['title'] = $article->getTitle();
-            $newsList[$key]['imageSrc'] = $article->getImageSource();
-            $newsList[$key]['text'] = $article->getText();
+//            $newsList[$key]['url'] = $url;
+//            $newsList[$key]['title'] = $article->getTitle();
+//            $newsList[$key]['imageSrc'] = $article->getImageSource();
+//            $newsList[$key]['text'] = $article->getText();
+
+            $db->query("INSERT INTO articles VALUES('$key', 'title', 'imageSrc','text'),(1, 'title', 'imageSrc','text')");
         }
-        $this->_response->getBody()->write(json_encode($newsList));
+
+        $result = $db->query('SELECT * FROM articles');
+        $this->_response->getBody()->write(json_encode($result->fetchArray()));
         return $this->_response;
     }
 }
