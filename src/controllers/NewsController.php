@@ -34,12 +34,12 @@ class NewsController
         $newsObject = json_decode($rbcClient->sendRequest());
 //        $newsList = [];
         $db = new RbcDb();
-//        $db->query("CREATE TABLE articles(
-//            'id' INTEGER,
-//            'title' STRING,
-//            'image_source' STRING,
-//            'text' TEXT
-//        )");
+        $db->query("CREATE TABLE articles(
+            'id' INTEGER,
+            'title' STRING,
+            'image_source' STRING,
+            'text' TEXT
+        )");
 
         foreach($newsObject->items as $key => $news) {
             $news = new News($news->html);
@@ -57,7 +57,7 @@ class NewsController
 //            $newsList[$key]['imageSrc'] = $article->getImageSource();
 //            $newsList[$key]['text'] = $article->getText();
 
-            $db->query("INSERT INTO articles VALUES('$key', 'title', 'imageSrc','text'),(1, 'title', 'imageSrc','text')");
+            $db->query("INSERT INTO articles VALUES('$key', 'title', 'imageSrc','text')");
         }
 
         $result = $db->query('SELECT * FROM articles');

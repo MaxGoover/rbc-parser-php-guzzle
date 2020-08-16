@@ -12,6 +12,7 @@
     "require": {
         "ext-json": "*",
         "ext-pdo": "*",
+        "ext-sqlite": "*",
         "ext-sqlite3": "*",
         "guzzlehttp/guzzle": "^7.0",
         "league/route": "^4.5",
