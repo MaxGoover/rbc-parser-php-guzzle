@@ -13,7 +13,7 @@ class News
         $this->_phpQuery = phpQuery::newDocument($html);
     }
 
-    public function getUrl()
+    public function getUrl(): string
     {
         return $this->_phpQuery
             ->find('a')

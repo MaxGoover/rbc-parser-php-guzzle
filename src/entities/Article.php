@@ -13,14 +13,7 @@ class Article
         $this->_phpQuery = phpQuery::newDocument($html);
     }
 
-//    public function getDescription()
-//    {
-//        $description = $this->_phpQuery
-//            ->find('meta[name$=escription]')
-//            ->attr('content');
-//    }
-
-    public function getImageSource()
+    public function getImageSource(): ?string
     {
         $src = $this->_phpQuery
             ->find('.article__text img')
@@ -28,16 +21,15 @@ class Article
         return $src ?: null;
     }
 
-    public function getText()
+    public function getText(): string
     {
         $text = $this->_phpQuery
             ->find('.article__text p')
             ->text();
-        return $text ?: 'Текст статьи не найден';
-//            ->wrap('<div style="width: 690px">');
+        return $text ?: 'ТЕКСТ НЕ НАЙДЕН';
     }
 
-    public function getTitle()
+    public function getTitle(): string
     {
         $title = $this->_phpQuery
             ->find('title')

@@ -83,12 +83,15 @@ class NewsController
         foreach($newsList as $news) {
             $description = $this->_cutText($news[3]);
             $html .= <<<HTML
-                <br><a href="$news[1]">$news[1]</a>
-                <br><h1>$news[2]</h1>
-                <p>$description</p>
-                <a href='/article/$news[0]'>
-                    <button style="cursor: pointer">Подробнее</button>
-                </a><br><hr><br>
+                <div class="background"></div>
+                <div class="content">
+                    <br><a href="$news[1]">$news[1]</a>
+                    <br><h1>$news[2]</h1>
+                    <p>$description</p>
+                    <a href='/article/$news[0]'>
+                        <button class="btn-more">Подробнее</button>
+                    </a><br><hr><br>
+                </div>
             HTML;
         }
         return $html;
