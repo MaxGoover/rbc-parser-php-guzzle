@@ -1,0 +1,24 @@
+{
+    "name": "maxgoover/rbc-parser-php-guzzle",
+    "type": "project",
+    "license": "Free",
+    "authors": [
+        {
+            "name": "maxgoover",
+            "email": "maxgoover@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "ext-json": "*",
+        "ext-pdo": "*",
+        "ext-sqlite3": "*",
+        "guzzlehttp/guzzle": "^7.0",
+        "electrolinux/phpquery": "^0.9.6"
+    },
+    "autoload": {
+      "psr-4": {
+        "app\\": "src/"
+      }
+    }
+}
