@@ -17,20 +17,13 @@ class NewsController
             'v10/ajax/get-news-feed/project/rbcnews/lastDate/'
             . time()
             . '/limit/'
-            . 10
+            . 15
             . '?_='
             . time());
         $newsObject = json_decode($rbcClient->sendRequest());
 
         // Создать таблицу для хранения новостей
         $db = new RbcDb();
-//        $db->query("CREATE TABLE articles(
-//            'id' INTEGER PRIMARY KEY,
-//            'url' STRING,
-//            'title' STRING,
-//            'image_source' STRING,
-//            'text' TEXT
-//        )");
 
         // Очищаем таблицу
         $db->query("DELETE FROM articles");
@@ -47,16 +40,23 @@ class NewsController
             $html = $rbcClient->sendRequest();
             $article = new Article($html);
             $title = $article->getTitle();
+            $description = $article->getDescription();
             $imageSource = $article->getImageSource();
             $text = $article->getText();
 
             $db->query("
-                INSERT INTO articles('url', 'title', 'image_source', 'text')
+                INSERT INTO articles(
+                    'url',
+                    'title',
+                    'description',
+                    'image_source',
+                    'text')
                 VALUES(
-                '$url',
-                '$title',
-                '$imageSource',
-                '$text')");
+                    '$url',
+                    '$title',
+                    '$description',
+                    '$imageSource',
+                    '$text')");
         }
 
         $result = $db->query('SELECT id, url, title, text FROM articles');
@@ -69,6 +69,11 @@ class NewsController
         echo $this->_showNews($newsList);
     }
 
+    /**
+     * Обрезает текст (например, текст статьи).
+     * @param string $text
+     * @return string
+     */
     private function _cutText(string $text): string
     {
         $text = mb_substr($text, 0, 200);
@@ -77,19 +82,25 @@ class NewsController
         return nl2br($text);
     }
 
+    /**
+     * Отрисовывает список новостей.
+     * @param array $newsList
+     * @return string
+     */
     private function _showNews(array $newsList): string
     {
-        $html = '';
+        $style = file_get_contents(__DIR__ . '/../../public/css/style.css', FILE_USE_INCLUDE_PATH);
+
+        $html = "<style>$style</style><div class='background'></div>";
         foreach($newsList as $news) {
             $description = $this->_cutText($news[3]);
             $html .= <<<HTML
-                <div class="background"></div>
                 <div class="content">
                     <br><a href="$news[1]">$news[1]</a>
                     <br><h1>$news[2]</h1>
                     <p>$description</p>
                     <a href='/article/$news[0]'>
-                        <button class="btn-more">Подробнее</button>
+                        <button class="cursor-pointer">Подробнее</button>
                     </a><br><hr><br>
                 </div>
             HTML;

@@ -13,6 +13,10 @@ class News
         $this->_phpQuery = phpQuery::newDocument($html);
     }
 
+    /**
+     * Возращает URL-ссылку на статью.
+     * @return string
+     */
     public function getUrl(): string
     {
         return $this->_phpQuery

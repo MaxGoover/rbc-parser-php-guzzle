@@ -13,6 +13,22 @@ class Article
         $this->_phpQuery = phpQuery::newDocument($html);
     }
 
+    /**
+     * Возвращает описание статьи.
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        $text = $this->_phpQuery
+            ->find('.article__text span')
+            ->text();
+        return $text;
+    }
+
+    /**
+     * Возвращает ссылку на картинку.
+     * @return string|null
+     */
     public function getImageSource(): ?string
     {
         $src = $this->_phpQuery
@@ -21,19 +37,26 @@ class Article
         return $src ?: null;
     }
 
+    /**
+     * Возвращает текст статьи.
+     * @return string
+     */
     public function getText(): string
     {
         $text = $this->_phpQuery
             ->find('.article__text p')
             ->text();
-        return $text ?: 'ТЕКСТ НЕ НАЙДЕН';
+        return $text ?: 'ТЕКСТ СТАТЬИ НЕ НАЙДЕН';
     }
 
+    /**
+     * Возвращает заголовок статьи.
+     * @return string
+     */
     public function getTitle(): string
     {
-        $title = $this->_phpQuery
+        return $this->_phpQuery
             ->find('title')
             ->text();
-        return $title ?: 'Заголовок статьи не найден';
     }
 }
