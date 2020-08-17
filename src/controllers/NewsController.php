@@ -26,46 +26,23 @@ class NewsController
         $db = new RbcDb();
 
         // Очищаем таблицу
-        $db->query("DELETE FROM articles");
+        $db->clearTable('articles');
 
         foreach($newsObject->items as $key => $news) {
             $news = new News($news->html);
             $url = $news->getUrl();
             $parseUrl = parse_url($url);
-            $list[$key] = $parseUrl;
             $rbcClient = new RbcClient(
                 $parseUrl['scheme'] . '://' . $parseUrl['host'],
                 $parseUrl['path'] . '?' . $parseUrl['query']
             );
             $html = $rbcClient->sendRequest();
             $article = new Article($html);
-            $title = $article->getTitle();
-            $description = $article->getDescription();
-            $imageSource = $article->getImageSource();
-            $text = $article->getText();
-
-            $db->query("
-                INSERT INTO articles(
-                    'url',
-                    'title',
-                    'description',
-                    'image_source',
-                    'text')
-                VALUES(
-                    '$url',
-                    '$title',
-                    '$description',
-                    '$imageSource',
-                    '$text')");
+            $db->saveArticle($url, $article);
         }
 
-        $result = $db->query('SELECT id, url, title, text FROM articles');
-        $newsList = [];
-        $result->reset();
-        while ($article = $result->fetchArray()) {
-            $newsList[] = $article;
-        }
-        $result->reset();
+        $result = $db->getNewsFromTable('articles');
+        $newsList = $db->normalizeNews($result);
         echo $this->_showNews($newsList);
     }
 
@@ -90,18 +67,17 @@ class NewsController
     private function _showNews(array $newsList): string
     {
         $style = file_get_contents(__DIR__ . '/../../public/css/style.css', FILE_USE_INCLUDE_PATH);
-
         $html = "<style>$style</style><div class='background'></div>";
         foreach($newsList as $news) {
             $description = $this->_cutText($news[3]);
             $html .= <<<HTML
                 <div class="content">
-                    <br><a href="$news[1]">$news[1]</a>
+                    <a href="$news[1]">$news[1]</a>
                     <br><h1>$news[2]</h1>
                     <p>$description</p>
                     <a href='/article/$news[0]'>
                         <button class="cursor-pointer">Подробнее</button>
-                    </a><br><hr><br>
+                    </a><br><br><hr><br>
                 </div>
             HTML;
         }
