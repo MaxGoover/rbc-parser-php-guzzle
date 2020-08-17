@@ -1,10 +1,15 @@
 <?php
 
-namespace app\entities;
+namespace app\layouts;
 
 use phpQuery;
 
-class Article
+/**
+ * Класс разметки статьи.
+ * Class ArticleLayout
+ * @package app\layouts
+ */
+class ArticleLayout
 {
     private $_phpQuery;
 
@@ -19,10 +24,9 @@ class Article
      */
     public function getDescription(): string
     {
-        $text = $this->_phpQuery
+        return $this->_phpQuery
             ->find('.article__text span')
-            ->text();
-        return $text;
+            ->text();;
     }
 
     /**

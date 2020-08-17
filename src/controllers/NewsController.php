@@ -2,48 +2,45 @@
 
 namespace app\controllers;
 
-use app\db\RbcDb;
-use app\entities\Article;
-use app\entities\News;
+use app\db\RbcDbArticle;
+use app\layouts\ArticleLayout;
+use app\layouts\NewsLayout;
 use app\services\RbcClient;
+use GuzzleHttp\Exception\GuzzleException;
 
 class NewsController
 {
-    public function __construct()
+    /**
+     * Отрисовывает список новостей.
+     * @throws GuzzleException
+     */
+    public function displayNews()
     {
-        // Получить 10 новостей
-        $rbcClient = new RbcClient(
-            'https://rbc.ru',
-            'v10/ajax/get-news-feed/project/rbcnews/lastDate/'
-            . time()
-            . '/limit/'
-            . 15
-            . '?_='
-            . time());
-        $newsObject = json_decode($rbcClient->sendRequest());
+        // Получаем список новостей
+        $rbcClient = new RbcClient();
+        $newsList = $rbcClient->getNewsLayouts();
 
-        // Создать таблицу для хранения новостей
-        $db = new RbcDb();
+        // Подключаемся к БД
+        $rbcDbArticle = new RbcDbArticle();
 
-        // Очищаем таблицу
-        $db->clearTable('articles');
+        // Очищаем таблицу статей в БД
+        $rbcDbArticle->clearTable();
 
-        foreach($newsObject->items as $key => $news) {
-            $news = new News($news->html);
+        // У каждой новости получаем статью и сохраняем её в БД
+        foreach($newsList as $key => $news) {
+            $news = new NewsLayout($news->html);
             $url = $news->getUrl();
-            $parseUrl = parse_url($url);
-            $rbcClient = new RbcClient(
-                $parseUrl['scheme'] . '://' . $parseUrl['host'],
-                $parseUrl['path'] . '?' . $parseUrl['query']
-            );
-            $html = $rbcClient->sendRequest();
-            $article = new Article($html);
-            $db->saveArticle($url, $article);
+            $html = $rbcClient->getArticleLayoutByUrl($url);
+            $article = new ArticleLayout($html);
+            $rbcDbArticle->save($url, $article);
         }
 
-        $result = $db->getNewsFromTable('articles');
-        $newsList = $db->normalizeNews($result);
-        echo $this->_showNews($newsList);
+        // Получаем список новостей из БД
+        $result = $rbcDbArticle->getNews();
+        $newsList = $rbcDbArticle->normalizeNews($result);
+
+        // Отрисовываем список новостей
+        echo $this->_renderNews($newsList);
     }
 
     /**
@@ -60,14 +57,19 @@ class NewsController
     }
 
     /**
-     * Отрисовывает список новостей.
+     * Рендерит список новостей.
      * @param array $newsList
      * @return string
      */
-    private function _showNews(array $newsList): string
+    private function _renderNews(array $newsList): string
     {
+        // Получаем стили для новостей
         $style = file_get_contents(__DIR__ . '/../../public/css/style.css', FILE_USE_INCLUDE_PATH);
+
+        // Подключаем стили
         $html = "<style>$style</style><div class='background'></div>";
+
+        // Рендерим список новостей
         foreach($newsList as $news) {
             $description = $this->_cutText($news[3]);
             $html .= <<<HTML
