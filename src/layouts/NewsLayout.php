@@ -1,10 +1,15 @@
 <?php
 
-namespace app\entities;
+namespace app\layouts;
 
 use phpQuery;
 
-class News
+/**
+ * Класс разметки новости.
+ * Class NewsLayout
+ * @package app\layouts
+ */
+class NewsLayout
 {
     private $_phpQuery;
 
