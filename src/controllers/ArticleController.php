@@ -15,6 +15,7 @@ class ArticleController
     }
 
     /**
+     * Отображает содержимое статьи.
      * @param array $article
      * @return string
      */
