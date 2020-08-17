@@ -2,30 +2,23 @@
 
 namespace app\controllers;
 
-use app\models\News;
-use app\services\RbcClient;
-use Laminas\Diactoros\Response;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
+use app\db\RbcDb;
 
 class ArticleController
 {
-    private Response $_response;
-
-    public function __construct()
+    public function __construct(int $articleId)
     {
-        $this->_response = new Response();
+        $db = new RbcDb();
+        $result = $db->query('SELECT * FROM articles WHERE `id` = ' . $articleId);
+        echo $this->_showArticle($result->fetchArray());
     }
 
-    public function __invoke(
-        ServerRequestInterface $request,
-        array $args = []
-    ): ResponseInterface
+    private function _showArticle(array $article): string
     {
-        $rbcClient = new RbcClient(
-            $args['domainName'],
-            $args['uri']);
-        $html = $rbcClient->sendRequest();
-        return $this->_response;
+        return <<<HTML
+                <br><h1>$article[2]</h1>
+                <img src="$article[3]">
+                <p>$article[4]</p>
+            HTML;
     }
 }

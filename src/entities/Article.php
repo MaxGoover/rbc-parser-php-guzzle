@@ -25,7 +25,7 @@ class Article
         $src = $this->_phpQuery
             ->find('.article__text img')
             ->attr('src');
-        return $src ?: 'Картинка не найдена';
+        return $src ?: null;
     }
 
     public function getText()

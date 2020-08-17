@@ -6,20 +6,10 @@ use app\db\RbcDb;
 use app\entities\Article;
 use app\entities\News;
 use app\services\RbcClient;
-use Laminas\Diactoros\Response;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 
 class NewsController
 {
-    private Response $_response;
-
     public function __construct()
-    {
-        $this->_response = new Response();
-    }
-
-    public function __invoke(ServerRequestInterface $request): ResponseInterface
     {
         // Получить 10 новостей
         $rbcClient = new RbcClient(
@@ -69,24 +59,19 @@ class NewsController
                 '$text')");
         }
 
-        $result = $db->query('SELECT id, title, text FROM articles');
+        $result = $db->query('SELECT id, url, title, text FROM articles');
         $newsList = [];
         $result->reset();
         while ($article = $result->fetchArray()) {
-//            $articles['description'] = $this->_cutText($article['text']);
             $newsList[] = $article;
         }
-
-        $db->close();
-        $this->_response
-            ->getBody()
-            ->write($this->_showNews($newsList));
-        return $this->_response;
+        $result->reset();
+        echo $this->_showNews($newsList);
     }
 
     private function _cutText(string $text): string
     {
-        $text = substr($text, 0, 200);
+        $text = mb_substr($text, 0, 200);
         $text = rtrim($text, "!,.-");
         $text = substr($text, 0, strrpos($text, ' '))."...";
         return nl2br($text);
@@ -96,15 +81,16 @@ class NewsController
     {
         $html = '';
         foreach($newsList as $news) {
+            $description = $this->_cutText($news[3]);
             $html .= <<<HTML
-                <h1></h1>
-
+                <br><a href="$news[1]">$news[1]</a>
+                <br><h1>$news[2]</h1>
+                <p>$description</p>
+                <a href='/article/$news[0]'>
+                    <button style="cursor: pointer">Подробнее</button>
+                </a><br><hr><br>
             HTML;
         }
-
-        return <<<HTML
-            
-
-        HTML;
+        return $html;
     }
 }
