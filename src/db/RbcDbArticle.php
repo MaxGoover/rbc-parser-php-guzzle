@@ -6,7 +6,7 @@ use app\layouts\ArticleLayout;
 use SQLite3Result;
 
 /**
- * Класс подключения к таблице "articles"
+ * Класс подключения к таблице 'articles'.
  * Class RbcDbArticle
  * @package app\db
  */
@@ -28,15 +28,6 @@ class RbcDbArticle extends RbcDb
     }
 
     /**
-     * Получает новости из таблицы.
-     * @return SQLite3Result
-     */
-    public function getNews(): SQLite3Result
-    {
-        return $this->query("SELECT id, url, title, text FROM " . $this->_tableName);
-    }
-
-    /**
      * Получает статью по ID.
      * @param int $articleId
      * @return SQLite3Result
@@ -46,6 +37,15 @@ class RbcDbArticle extends RbcDb
         return $this->query("
                 SELECT * FROM " . $this->_tableName . "
                 WHERE `id` = " . $articleId);
+    }
+
+    /**
+     * Получает новости из таблицы.
+     * @return SQLite3Result
+     */
+    public function getNews(): SQLite3Result
+    {
+        return $this->query("SELECT id, url, title, text FROM " . $this->_tableName);
     }
 
     /**

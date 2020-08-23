@@ -1,8 +1,8 @@
 .background {
-    background-color: mediumseagreen;
+    background: url(../../public/img/bg_rbc.jpg);
     background-size: cover;
     height: 100%;
-    opacity: 0.4;
+    opacity: 0.3;
     position: fixed;
     width: 100%;
     z-index: -1;

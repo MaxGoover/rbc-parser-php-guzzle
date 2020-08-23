@@ -19,6 +19,19 @@ class NewsLayout
     }
 
     /**
+     * Обрезает текст статьи.
+     * @param string $text
+     * @return string
+     */
+    static public function cutText(string $text): string
+    {
+        $text = mb_substr($text, 0, 200);
+        $text = rtrim($text, "!,.-");
+        $text = substr($text, 0, strrpos($text, ' '))."...";
+        return nl2br($text);
+    }
+
+    /**
      * Возращает URL-ссылку на статью.
      * @return string
      */
