@@ -77,8 +77,8 @@ class RbcDbArticle extends RbcDb
         $text = $articleLayout->getText();
         $this->exec("
                 INSERT INTO " . $this->_tableName . "
-                ('url','title','description','image_source','text')
+                ('url', 'title', 'description', 'image_source', 'text')
                 VALUES
-                ('$url','$title','$description','$imageSource','$text')");
+                ('$url', '$title', '$description', '$imageSource', '$text')");
     }
 }
